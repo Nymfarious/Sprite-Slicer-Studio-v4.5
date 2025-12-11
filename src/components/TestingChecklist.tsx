@@ -95,6 +95,7 @@ const buildLog: BuildLogItem[] = [
       { name: "Tooltip Z-index Fix", status: "complete", desc: "Fixed .txt download tooltip overlap" },
       { name: "Tab Content Height", status: "complete", desc: "50%+ fill for all tabs" },
       { name: "Library Panel Opacity", status: "complete", desc: "85-90% backdrop blur" },
+      { name: "Resizable Bottom Panel", status: "complete", desc: "Draggable divider (25%-75% height range) with snap buttons" },
     ]
   },
   {
@@ -114,6 +115,18 @@ const buildLog: BuildLogItem[] = [
       { name: "Auto-naming Convention", status: "complete", desc: "sheet_name_row_col format" },
       { name: "10-Step Undo History", status: "complete", desc: "useUndoRedo hook" },
       { name: "Up/Down Buttons Styled", status: "complete", desc: "Improved visual design" },
+      { name: "Clear Selections Confirmation", status: "complete", desc: "Dialog to prevent accidental data loss" },
+    ]
+  },
+  {
+    category: "Crop Tool (v4.5)",
+    items: [
+      { name: "Octagon Shape", status: "complete", desc: "Added octagon option to crop shapes" },
+      { name: "Use Grid Selection", status: "complete", desc: "Checkbox to use grid cells as crop boundary" },
+      { name: "Inside/Outside Mode", status: "complete", desc: "Renamed from Keep/Remove for clarity" },
+      { name: "Clear Selection Button", status: "complete", desc: "Quick clear without canceling crop" },
+      { name: "SaveToLibraryDialog", status: "complete", desc: "Save cropped result with name/tags" },
+      { name: "CropTool Refactored", status: "complete", desc: "Split 655-line file into 5 focused modules" },
     ]
   },
   {
@@ -145,6 +158,16 @@ const buildLog: BuildLogItem[] = [
       { name: "Batch Processing Flow", status: "complete", desc: "Progress bar and completion screen" },
       { name: "Avatar Completion Screen", status: "complete", desc: "Replayable animation" },
       { name: "AI Error Analyzer", status: "complete", desc: "Edge function integration" },
+      { name: "AI Boundaries Button", status: "stub", desc: "Coming soon in v4.5 tooltip" },
+    ]
+  },
+  {
+    category: "Editor Toolbar (v4.5)",
+    items: [
+      { name: "Clear Selections Renamed", status: "complete", desc: "Changed from 'Select None'" },
+      { name: "Freeform Tool Popover", status: "complete", desc: "Moved from panel to icon with popup" },
+      { name: "Reload Original Image", status: "complete", desc: "Button to restore original after transforms" },
+      { name: "Projects Bar Compact", status: "complete", desc: "New Project button icon-only with tooltip" },
     ]
   },
   {
@@ -160,9 +183,11 @@ const buildLog: BuildLogItem[] = [
     items: [
       { name: "Testing Checklist Modal", status: "complete", desc: "This component!" },
       { name: "Plan Options Tab", status: "complete", desc: "30 items with Yes/No/Maybe/Later" },
-      { name: "Build Log Tab", status: "complete", desc: "Feature changelog" },
+      { name: "Build Log Tab", status: "complete", desc: "Feature changelog with v4.5 updates" },
       { name: "Error Log + AI Debugger", status: "complete", desc: "Split-screen error analysis" },
       { name: "Mind Map Flowchart", status: "complete", desc: "Mermaid diagram pane" },
+      { name: "Mobile Issues Tab", status: "complete", desc: "Tracking mobile UX gaps" },
+      { name: "AI Features Tab", status: "complete", desc: "AI dependency documentation" },
     ]
   },
 ];
@@ -683,7 +708,7 @@ export default function TestingChecklist() {
     const report = `
 # Sprite Slicer Studio — Build Report
 Generated: ${timestamp}
-Version: 4.1
+Version: 4.5 Pre-Alpha
 
 ## Plan Options Summary
 ✅ Yes: ${Object.values(planResponses).filter(r => r === 'yes').length}
