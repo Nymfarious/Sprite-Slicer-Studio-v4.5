@@ -3,6 +3,16 @@ import { Undo2, Redo2, Send, RotateCw, FlipHorizontal, FlipVertical, Move, Erase
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { CropToolPopover } from '../CropToolPopover';
 import { CookieCutterPopover } from '../CookieCutterPopover';
 import { AdvancedSettingsPopover } from '../AdvancedSettingsPopover';
@@ -42,6 +52,7 @@ export function EditorToolbar({
   freeform,
 }: EditorToolbarProps) {
   const [showOverflow, setShowOverflow] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
 
@@ -351,11 +362,35 @@ export function EditorToolbar({
                   <DropdownMenuItem onClick={onSelectAll} className="gap-2">
                     <CheckSquare className="w-4 h-4" /> Select All
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={onDeselectAll} disabled={selectedCells.size === 0} className="gap-2">
+                  <DropdownMenuItem onClick={() => setShowClearConfirm(true)} disabled={selectedCells.size === 0} className="gap-2">
                     <SquareSlash className="w-4 h-4" /> Clear Selections
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear All Selections?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will clear {selectedCells.size} selected cell{selectedCells.size !== 1 ? 's' : ''}. 
+                      This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={() => {
+                        onDeselectAll();
+                        toast.success('Selections cleared');
+                      }}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Clear Selections
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
               <CookieCutterPopover
                 disabled={!uploadedImage}
