@@ -3,12 +3,16 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Bug, Loader2, Mail, ArrowLeft } from 'lucide-react'
+import { Bug, Loader2, Mail, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 
 type AuthView = 'main' | 'forgot-password'
+
+const REMEMBERED_EMAIL_KEY = 'sprite-slicer-remembered-email'
 
 export default function Auth() {
   const { 
@@ -27,9 +31,21 @@ export default function Auth() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [rememberEmail, setRememberEmail] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [view, setView] = useState<AuthView>('main')
+
+  // Load remembered email on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem(REMEMBERED_EMAIL_KEY)
+    if (savedEmail) {
+      setEmail(savedEmail)
+      setRememberEmail(true)
+    }
+  }, [])
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -48,6 +64,13 @@ export default function Auth() {
     setLoading(true)
     setError('')
     try {
+      // Handle remember email
+      if (rememberEmail) {
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, email)
+      } else {
+        localStorage.removeItem(REMEMBERED_EMAIL_KEY)
+      }
+      
       await signInWithEmail(email, password)
       toast.success('Signed in successfully')
     } catch (err: any) {
@@ -72,8 +95,8 @@ export default function Auth() {
     setError('')
     try {
       await signUpWithEmail(email, password)
-      toast.success('Account created!', { description: 'Check your email for confirmation link' })
-      setError('Check your email for confirmation link!')
+      toast.success('Account created!', { description: 'You can now sign in' })
+      setError('')
     } catch (err: any) {
       const message = err.message || 'Failed to create account'
       setError(message)
@@ -126,6 +149,7 @@ export default function Auth() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-gray-700 border-gray-600 text-white"
                 disabled={loading}
+                autoComplete="email"
               />
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
@@ -223,15 +247,54 @@ export default function Auth() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-gray-700 border-gray-600 text-white"
                   disabled={loading}
+                  autoComplete="email"
                 />
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-gray-700 border-gray-600 text-white"
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-gray-700 border-gray-600 text-white pr-10"
+                    disabled={loading}
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                
+                {/* Remember options */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="remember-email" 
+                      checked={rememberEmail}
+                      onCheckedChange={(checked) => setRememberEmail(checked as boolean)}
+                      className="border-gray-600 data-[state=checked]:bg-primary"
+                    />
+                    <Label htmlFor="remember-email" className="text-sm text-gray-400 cursor-pointer">
+                      Remember email
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="remember-me" 
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                      className="border-gray-600 data-[state=checked]:bg-primary"
+                    />
+                    <Label htmlFor="remember-me" className="text-sm text-gray-400 cursor-pointer">
+                      Keep me signed in
+                    </Label>
+                  </div>
+                </div>
+
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? (
                     <>
@@ -261,15 +324,27 @@ export default function Auth() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-gray-700 border-gray-600 text-white"
                   disabled={loading}
+                  autoComplete="email"
                 />
-                <Input
-                  type="password"
-                  placeholder="Password (min 6 characters)"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-gray-700 border-gray-600 text-white"
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password (min 6 characters)"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-gray-700 border-gray-600 text-white pr-10"
+                    disabled={loading}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? (
                     <>

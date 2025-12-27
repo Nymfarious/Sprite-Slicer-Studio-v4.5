@@ -13,27 +13,36 @@ import TestingChecklist from "./components/TestingChecklist";
 
 const queryClient = new QueryClient();
 
+// Use basename only in production (GitHub Pages)
+const basename = import.meta.env.PROD ? "/Sprite-Slicer-Studio-v4_5" : "";
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      } />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Index />
+        </ProtectedRoute>
+      } />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter basename="/Sprite-Slicer-Studio-v4_5">
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <BrowserRouter basename={basename}>
+          <AppRoutes />
           <TestingChecklist />
         </BrowserRouter>
       </AuthProvider>
